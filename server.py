@@ -9,7 +9,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
-import httpx
+import urllib.request
+from urllib.parse import quote
 
 ROOT = Path(__file__).parent
 CARDS = json.loads((ROOT / 'cards.json').read_text(encoding='utf-8'))
@@ -247,11 +248,12 @@ async def image(card_id: str):
         else:
             url = None
             try:
-                async with httpx.AsyncClient(timeout=12, follow_redirects=True, headers={'User-Agent':'PoznaiKoiSi/1.0 (photo identity game; Wikimedia attribution)'}) as client:
-                    response = await client.get('https://en.wikipedia.org/api/rest_v1/page/summary/' + c['wiki'])
-                    if response.status_code == 200:
-                        url = response.json().get('thumbnail', {}).get('source')
-            except (httpx.HTTPError, ValueError):
+                def resolve_image():
+                    req = urllib.request.Request('https://en.wikipedia.org/api/rest_v1/page/summary/' + quote(c['wiki']), headers={'User-Agent':'KoiSamAz/1.0 (photo party game)'})
+                    with urllib.request.urlopen(req, timeout=12) as response:
+                        return json.load(response).get('thumbnail', {}).get('source')
+                url = await asyncio.to_thread(resolve_image)
+            except (OSError, ValueError):
                 pass
             image_cache[card_id] = {'at': time.time(), 'url': url}
     if url and url.startswith('https://upload.wikimedia.org/'):
