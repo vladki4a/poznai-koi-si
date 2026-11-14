@@ -1,0 +1,291 @@
+[
+  {
+    "id": "cat",
+    "name": "Котка",
+    "wiki": "Cat",
+    "category": "animals",
+    "photo": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&q=80"
+  },
+  {
+    "id": "dog",
+    "name": "Куче",
+    "wiki": "Dog",
+    "category": "animals"
+  },
+  {
+    "id": "lion",
+    "name": "Лъв",
+    "wiki": "Lion",
+    "category": "animals"
+  },
+  {
+    "id": "elephant",
+    "name": "Слон",
+    "wiki": "Elephant",
+    "category": "animals"
+  },
+  {
+    "id": "giraffe",
+    "name": "Жираф",
+    "wiki": "Giraffe",
+    "category": "animals"
+  },
+  {
+    "id": "panda",
+    "name": "Панда",
+    "wiki": "Giant_panda",
+    "category": "animals"
+  },
+  {
+    "id": "tiger",
+    "name": "Тигър",
+    "wiki": "Tiger",
+    "category": "animals"
+  },
+  {
+    "id": "penguin",
+    "name": "Пингвин",
+    "wiki": "Penguin",
+    "category": "animals"
+  },
+  {
+    "id": "dolphin",
+    "name": "Делфин",
+    "wiki": "Dolphin",
+    "category": "animals"
+  },
+  {
+    "id": "horse",
+    "name": "Кон",
+    "wiki": "Horse",
+    "category": "animals"
+  },
+  {
+    "id": "fox",
+    "name": "Лисица",
+    "wiki": "Red_fox",
+    "category": "animals"
+  },
+  {
+    "id": "rabbit",
+    "name": "Заек",
+    "wiki": "Rabbit",
+    "category": "animals"
+  },
+  {
+    "id": "bicycle",
+    "name": "Велосипед",
+    "wiki": "Bicycle",
+    "category": "objects"
+  },
+  {
+    "id": "guitar",
+    "name": "Китара",
+    "wiki": "Guitar",
+    "category": "objects"
+  },
+  {
+    "id": "piano",
+    "name": "Пиано",
+    "wiki": "Piano",
+    "category": "objects"
+  },
+  {
+    "id": "camera",
+    "name": "Фотоапарат",
+    "wiki": "Camera",
+    "category": "objects"
+  },
+  {
+    "id": "umbrella",
+    "name": "Чадър",
+    "wiki": "Umbrella",
+    "category": "objects"
+  },
+  {
+    "id": "clock",
+    "name": "Часовник",
+    "wiki": "Alarm_clock",
+    "category": "objects"
+  },
+  {
+    "id": "tractor",
+    "name": "Трактор",
+    "wiki": "Tractor",
+    "category": "objects"
+  },
+  {
+    "id": "airplane",
+    "name": "Самолет",
+    "wiki": "Airplane",
+    "category": "objects"
+  },
+  {
+    "id": "ball",
+    "name": "Футболна топка",
+    "wiki": "Ball_(association_football)",
+    "category": "objects"
+  },
+  {
+    "id": "book",
+    "name": "Книга",
+    "wiki": "Book",
+    "category": "objects"
+  },
+  {
+    "id": "key",
+    "name": "Ключ",
+    "wiki": "Key_(lock)",
+    "category": "objects"
+  },
+  {
+    "id": "phone",
+    "name": "Телефон",
+    "wiki": "Mobile_phone",
+    "category": "objects"
+  },
+  {
+    "id": "eiffel",
+    "name": "Айфеловата кула",
+    "wiki": "Eiffel_Tower",
+    "category": "places"
+  },
+  {
+    "id": "colosseum",
+    "name": "Колизеумът",
+    "wiki": "Colosseum",
+    "category": "places"
+  },
+  {
+    "id": "pyramids",
+    "name": "Египетските пирамиди",
+    "wiki": "Giza_pyramid_complex",
+    "category": "places"
+  },
+  {
+    "id": "liberty",
+    "name": "Статуята на свободата",
+    "wiki": "Statue_of_Liberty",
+    "category": "places"
+  },
+  {
+    "id": "bigben",
+    "name": "Биг Бен",
+    "wiki": "Big_Ben",
+    "category": "places"
+  },
+  {
+    "id": "tajmahal",
+    "name": "Тадж Махал",
+    "wiki": "Taj_Mahal",
+    "category": "places"
+  },
+  {
+    "id": "wall",
+    "name": "Великата китайска стена",
+    "wiki": "Great_Wall_of_China",
+    "category": "places"
+  },
+  {
+    "id": "brandenburg",
+    "name": "Бранденбургската врата",
+    "wiki": "Brandenburg_Gate",
+    "category": "places"
+  },
+  {
+    "id": "sagrada",
+    "name": "Саграда Фамилия",
+    "wiki": "Sagrada_Família",
+    "category": "places"
+  },
+  {
+    "id": "acropolis",
+    "name": "Акрополът",
+    "wiki": "Acropolis_of_Athens",
+    "category": "places"
+  },
+  {
+    "id": "rila",
+    "name": "Рилският манастир",
+    "wiki": "Rila_Monastery",
+    "category": "places"
+  },
+  {
+    "id": "shipka",
+    "name": "Паметникът на Шипка",
+    "wiki": "Shipka_Monument",
+    "category": "places"
+  },
+  {
+    "id": "messi",
+    "name": "Лионел Меси",
+    "wiki": "Lionel_Messi",
+    "category": "people"
+  },
+  {
+    "id": "ronaldo",
+    "name": "Кристиано Роналдо",
+    "wiki": "Cristiano_Ronaldo",
+    "category": "people"
+  },
+  {
+    "id": "einstein",
+    "name": "Алберт Айнщайн",
+    "wiki": "Albert_Einstein",
+    "category": "people"
+  },
+  {
+    "id": "chaplin",
+    "name": "Чарли Чаплин",
+    "wiki": "Charlie_Chaplin",
+    "category": "people"
+  },
+  {
+    "id": "jackson",
+    "name": "Майкъл Джексън",
+    "wiki": "Michael_Jackson",
+    "category": "people"
+  },
+  {
+    "id": "swift",
+    "name": "Тейлър Суифт",
+    "wiki": "Taylor_Swift",
+    "category": "people"
+  },
+  {
+    "id": "billie",
+    "name": "Били Айлиш",
+    "wiki": "Billie_Eilish",
+    "category": "people"
+  },
+  {
+    "id": "shakira",
+    "name": "Шакира",
+    "wiki": "Shakira",
+    "category": "people"
+  },
+  {
+    "id": "rock",
+    "name": "Дуейн Джонсън",
+    "wiki": "Dwayne_Johnson",
+    "category": "people"
+  },
+  {
+    "id": "leonardo",
+    "name": "Леонардо ди Каприо",
+    "wiki": "Leonardo_DiCaprio",
+    "category": "people"
+  },
+  {
+    "id": "adele",
+    "name": "Адел",
+    "wiki": "Adele",
+    "category": "people"
+  },
+  {
+    "id": "jordan",
+    "name": "Майкъл Джордан",
+    "wiki": "Michael_Jordan",
+    "category": "people"
+  }
+]

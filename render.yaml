@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: poznai-koi-si
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.14
+      - key: ADSENSE_CLIENT
+        value: ca-pub-4652878874110312
+      - key: ADS_APPROVED
+        value: '0'
