@@ -10,7 +10,8 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 import urllib.request
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
+from html.parser import HTMLParser
 
 ROOT = Path(__file__).parent
 CARDS = json.loads((ROOT / 'cards.json').read_text(encoding='utf-8'))
@@ -35,10 +36,10 @@ def clean_name(value):
 
 def selected_cards(config):
     categories = config.get('categories', [])
-    if not isinstance(categories, list):
-        fail('Избери категории.')
+    if not isinstance(categories, list) or len(categories) != 1 or categories[0] not in ('animals', 'objects', 'places', 'people', 'custom'):
+        fail('Избери точно една категория.')
     pool = [c for c in CARDS if c['category'] in categories]
-    custom = config.get('custom', [])
+    custom = config.get('custom', []) if categories == ['custom'] else []
     if not isinstance(custom, list) or len(custom) > 80:
         fail('Позволени са до 80 собствени карти.')
     for i, c in enumerate(custom):
@@ -132,7 +133,7 @@ def health():
 
 @app.get('/api/catalog')
 def catalog():
-    return dict(cards=[dict(id=c['id'], name=c['name'], category=c['category'], image='/image/'+c['id']) for c in CARDS],
+    return dict(cards=[dict(id=c['id'], name=c['name'], wiki=c['wiki'], category=c['category'], image=c.get('photo') or '/image/'+c['id']) for c in CARDS],
                 ads=dict(client=os.getenv('ADSENSE_CLIENT', ''), approved=os.getenv('ADS_APPROVED') == '1', horizontal='7473811583', side='5554225257'))
 
 
@@ -249,16 +250,36 @@ async def image(card_id: str):
             url = None
             try:
                 def resolve_image():
-                    req = urllib.request.Request('https://en.wikipedia.org/api/rest_v1/page/summary/' + quote(c['wiki']), headers={'User-Agent':'KoiSamAz/1.0 (photo party game)'})
-                    with urllib.request.urlopen(req, timeout=12) as response:
-                        return json.load(response).get('thumbnail', {}).get('source')
+                    headers = {'User-Agent': 'KoiSamAz/1.1 (https://koi-sam-az.onrender.com; photo game)'}
+                    query = urlencode(dict(action='query', format='json', prop='pageimages', piprop='thumbnail', pithumbsize=640, titles=c['wiki'], redirects=1))
+                    try:
+                        req = urllib.request.Request('https://en.wikipedia.org/w/api.php?' + query, headers=headers)
+                        with urllib.request.urlopen(req, timeout=8) as response:
+                            pages = json.load(response).get('query', {}).get('pages', {})
+                            for page in pages.values():
+                                source = page.get('thumbnail', {}).get('source')
+                                if source:
+                                    return source
+                    except (OSError, ValueError):
+                        pass
+                    class Metadata(HTMLParser):
+                        source = None
+                        def handle_starttag(self, tag, attrs):
+                            attrs = dict(attrs)
+                            if tag == 'meta' and attrs.get('property') == 'og:image':
+                                self.source = attrs.get('content')
+                    req = urllib.request.Request('https://en.wikipedia.org/wiki/' + quote(c['wiki']), headers=headers)
+                    with urllib.request.urlopen(req, timeout=8) as response:
+                        parser = Metadata()
+                        parser.feed(response.read().decode('utf-8'))
+                        return parser.source
                 url = await asyncio.to_thread(resolve_image)
             except (OSError, ValueError):
                 pass
             image_cache[card_id] = {'at': time.time(), 'url': url}
     if url and url.startswith('https://upload.wikimedia.org/'):
         return RedirectResponse(url, headers={'Cache-Control':'public, max-age=86400'})
-    return Response('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#d9e8dc"/><text x="200" y="170" text-anchor="middle" font-size="70" fill="#254d40">?</text></svg>', media_type='image/svg+xml', headers={'Cache-Control':'public, max-age=60'})
+    return Response(status_code=503, headers={'Cache-Control':'no-store', 'Retry-After':'5'})
 
 
 @app.get('/ads.txt')
