@@ -30,24 +30,24 @@ def fail(message, code=400):
 
 def clean_name(value):
     if not isinstance(value, str) or not 1 <= len(value.strip()) <= 24:
-        fail('Името трябва да е между 1 и 24 знака.')
+        fail('���� ��� �� � ����� 1 � 24 �����.')
     return value.strip()
 
 
 def selected_cards(config):
     categories = config.get('categories', [])
     if not isinstance(categories, list) or len(categories) != 1 or categories[0] not in ('animals', 'objects', 'places', 'people', 'custom'):
-        fail('Избери точно една категория.')
+        fail('����� �筮 ���� ��⥣���.')
     pool = [c for c in CARDS if c['category'] in categories]
     custom = config.get('custom', []) if categories == ['custom'] else []
     if not isinstance(custom, list) or len(custom) > 80:
-        fail('Позволени са до 80 собствени карти.')
+        fail('��������� � �� 80 ᮡ�⢥�� ����.')
     for i, c in enumerate(custom):
         if not isinstance(c, dict) or not isinstance(c.get('name'), str) or not 1 <= len(c['name'].strip()) <= 60:
-            fail('Невалидна собствена карта.')
+            fail('��������� ᮡ�⢥�� ����.')
         image = c.get('image', '')
         if not isinstance(image, str) or len(image) > 190000 or (image and not image.startswith(('data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/webp;base64,'))):
-            fail('Невалидна снимка.')
+            fail('��������� ᭨���.')
         pool.append(dict(id='custom-' + str(i), name=c['name'].strip(), category='custom', image=image))
     unique = {c['name'].casefold(): c for c in pool}
     return list(unique.values())
@@ -66,14 +66,14 @@ def public_card(c, photos=True):
 def get_room(code):
     r = rooms.get(code.upper())
     if not r or time.time() - r['updated'] > TTL:
-        fail('Стаята не съществува или е изтекла.', 404)
+        fail('���� �� �����㢠 ��� � ��⥪��.', 404)
     return r
 
 
 def auth(r, token):
     p = next((p for p in r['players'] if secrets.compare_digest(p['token'], token)), None)
     if not p:
-        fail('Влез отново в стаята.', 403)
+        fail('���� �⭮�� � ����.', 403)
     p['seen'] = time.time()
     return p
 
@@ -105,16 +105,16 @@ async def security(request: Request, call_next):
     if request.url.path.startswith('/api/') and request.method == 'POST':
         origin = request.headers.get('origin')
         if origin and origin.rstrip('/') != str(request.base_url).rstrip('/'):
-            return JSONResponse({'detail': 'Невалиден източник.'}, status_code=403)
+            return JSONResponse({'detail': '��������� ���筨�.'}, status_code=403)
         if int(request.headers.get('content-length', '0')) > 3500000:
-            return JSONResponse({'detail': 'Снимките са твърде големи.'}, status_code=413)
+            return JSONResponse({'detail': '������� � ��थ ������.'}, status_code=413)
         ip = request.client.host if request.client else 'unknown'
         q = limits[ip]
         now = time.time()
         while q and q[0] < now-60:
             q.popleft()
         if len(q) > 160:
-            return JSONResponse({'detail': 'Твърде много заявки. Изчакай малко.'}, status_code=429)
+            return JSONResponse({'detail': '���थ ����� ���. ��砪�� �����.'}, status_code=429)
         q.append(now)
     response = await call_next(request)
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -144,10 +144,10 @@ async def create(request: Request):
         if time.time() - rooms[k]['updated'] > TTL:
             del rooms[k]
     if len(rooms) >= 150:
-        fail('Всички стаи са заети. Опитай по-късно.', 503)
+        fail('��窨 �⠨ � ����. ���⠩ ��-��᭮.', 503)
     pool = selected_cards(data)
     if len(pool) < 3:
-        fail('Нужни са поне 3 различни карти.')
+        fail('�㦭� � ���� 3 ࠧ��筨 ����.')
     p = player(data.get('name'))
     code = ''.join(secrets.choice('ABCDEFGHJKLMNPQRSTUVWXYZ23456789') for _ in range(6))
     while code in rooms:
@@ -163,12 +163,12 @@ async def join(request: Request):
     data = await request.json()
     r = get_room(str(data.get('code', '')))
     if r['phase'] != 'lobby':
-        fail('Играта вече е започнала.')
+        fail('���� ��� � ����筠��.')
     if len(r['players']) >= 8:
-        fail('Стаята е пълна (до 8 играчи).')
+        fail('���� � �ꫭ� (�� 8 ����).')
     p = player(data.get('name'))
     if any(x['name'].casefold() == p['name'].casefold() for x in r['players']):
-        fail('Това име вече се използва в стаята.')
+        fail('���� ��� ��� � �������� � ����.')
     r['players'].append(p)
     r.update(updated=time.time(), revision=r['revision']+1)
     return dict(token=p['token'], state=view(r, p))
@@ -190,32 +190,32 @@ async def action(code: str, request: Request):
     a = data.get('action')
     if a == 'start':
         if p['id'] != r['host']:
-            fail('Само домакинът може да започне.', 403)
+            fail('���� ��������� ���� �� ����筥.', 403)
         if r['phase'] not in ('lobby', 'finished'):
-            fail('Рундът вече е започнал.')
+            fail('�㭤�� ��� � ����筠�.')
         n = len(r['players'])
         if n < 3:
-            fail('Нужни са поне 3 играчи.')
+            fail('�㦭� � ���� 3 ����.')
         available = [c for c in r['pool'] if c['name'] not in r['used']]
         if len(available) < n:
             available = r['pool'][:]
             r['used'] = []
         if len(available) < n:
-            fail('Няма достатъчно различни карти за всички.')
+            fail('�ﬠ ������筮 ࠧ��筨 ���� �� ��窨.')
         cards = secrets.SystemRandom().sample(available, n)
         for x, c in zip(r['players'], cards):
             x.update(card=c, rank=None)
         r['used'].extend(c['name'] for c in cards)
-        r.update(phase='playing', turn=secrets.choice(r['players'])['id'], event='Нов рунд!')
+        r.update(phase='playing', turn=secrets.choice(r['players'])['id'], event='��� �㭤!')
     elif a in ('yes', 'no', 'solved'):
         if r['phase'] != 'playing':
-            fail('Няма активен рунд.')
+            fail('�ﬠ ��⨢�� �㭤.')
         if data.get('revision') != r['revision']:
-            fail('Ходът вече е променен. Опитай отново.', 409)
+            fail('����� ��� � �஬����. ���⠩ �⭮��.', 409)
         if p['id'] == r['turn']:
-            fail('Отговорът се потвърждава от друг играч.', 403)
+            fail('�⣮����� � ����ত��� �� ��� ����.', 403)
         current = next(x for x in r['players'] if x['id'] == r['turn'])
-        r['event'] = current['name'] + {'yes': ' получи „Да“ и продължава.', 'no': ' получи „Не“. Следващ играч!', 'solved': ' позна самоличността си!'}[a]
+        r['event'] = current['name'] + {'yes': ' ����� "��" � �தꫦ���.', 'no': ' ����� "��". ������� ����!', 'solved': ' ����� ᠬ���筮��� �!'}[a]
         if a == 'solved':
             current['rank'] = sum(x['rank'] is not None for x in r['players'])+1
             advance(r)
@@ -223,14 +223,14 @@ async def action(code: str, request: Request):
             advance(r)
     elif a == 'leave':
         if r['phase'] == 'playing':
-            fail('По време на рунд можеш да се върнеш със същия браузър. Напусни след края.')
+            fail('�� �६� �� �㭤 ����� �� � ��୥� ��� ���� �����. ����᭨ ᫥� ���.')
         r['players'].remove(p)
         if r['host'] == p['id'] and r['players']:
             r['host'] = r['players'][0]['id']
         r.update(revision=r['revision']+1, updated=time.time())
         return {'left': True}
     else:
-        fail('Непознато действие.')
+        fail('�������� ����⢨�.')
     r.update(revision=r['revision']+1, updated=time.time())
     return view(r, p)
 
@@ -239,7 +239,7 @@ async def action(code: str, request: Request):
 async def image(card_id: str):
     c = CARD_MAP.get(card_id)
     if not c:
-        fail('Липсваща карта.', 404)
+        fail('���ᢠ� ����.', 404)
     if c.get('photo'):
         return RedirectResponse(c['photo'])
     async with image_locks[card_id]:
@@ -295,8 +295,23 @@ def index():
 @app.get('/{filename}')
 def assets(filename: str):
     if filename not in ('app.js', 'style.css', 'icon.svg', 'manifest.webmanifest'):
-        fail('Страницата не съществува.', 404)
+        fail('��࠭��� �� �����㢠.', 404)
     return FileResponse(ROOT / filename)
+
+
+# Keep old shared links usable after the Marmalad Games domain migration.
+@app.middleware('http')
+async def marmalad_legacy_links(request: Request, call_next):
+    from fastapi.responses import RedirectResponse
+    path = request.url.path
+    if request.method in ('GET', 'HEAD') and path == '/sw.js':
+        return Response("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister().then(()=>self.clients.matchAll()).then(cs=>Promise.all(cs.map(c=>c.navigate(c.url))))));", media_type='application/javascript', headers={'Cache-Control':'no-store'})
+    if request.method in ('GET', 'HEAD') and path not in ('/health', '/ads.txt'):
+        target = 'https://marmalad.online/koi-sam-az' + path
+        if request.url.query:
+            target += '?' + request.url.query
+        return RedirectResponse(target, status_code=308)
+    return await call_next(request)
 
 
 if __name__ == '__main__':
